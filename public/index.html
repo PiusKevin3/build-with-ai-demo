@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gemini Workshop Demo</title>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.3);
+  }
+
+  #chat-container {
+    background: #1f1f2e;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 70vh; /* default height of container */
+  }
+
+  #chat {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto; /* scrollable when content exceeds height */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .message {
+    padding: 0.6rem 1rem;
+    border-radius: 20px;
+    max-width: 80%;
+    word-wrap: break-word;
+    line-height: 1.4;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .user {
+    background: #4ade80;
+    color: #1a1a1a;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .bot {
+    background: #3b82f6;
+    color: #fff;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  #input-area {
+    display: flex;
+    border-top: 1px solid #333;
+    padding: 0.5rem;
+    background: #2c2c3e;
+  }
+
+  #msg {
+    flex: 1;
+    border: none;
+    border-radius: 20px;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    outline: none;
+    margin-right: 0.5rem;
+    background: #1f1f2e;
+    color: #fff;
+  }
+
+  #send {
+    background: #10b981;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 0 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  #send:hover {
+    background: #059669;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scrollbar styling */
+  #chat::-webkit-scrollbar {
+    width: 6px;
+  }
+  #chat::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+
+<div id="chat-container">
+<h1>AI Web App</h1>
+  <div id="chat"></div>
+  <div id="input-area">
+    <input id="msg" placeholder="Type your message..." />
+    <button id="send">Send</button>
+  </div>
+</div>
+
+<script>
+const chat = document.getElementById('chat');
+const input = document.getElementById('msg');
+const btn = document.getElementById('send');
+
+function append(role, text) {
+  const p = document.createElement('div');
+  p.className = 'message ' + role;
+  p.textContent = text;
+  chat.appendChild(p);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+btn.addEventListener('click', async () => {
+  const message = input.value.trim();
+  if (!message) return;
+  append('user', message);
+  input.value = '';
+
+  const thinkingMsg = document.createElement('div');
+  thinkingMsg.className = 'message bot';
+  thinkingMsg.textContent = '...thinking';
+  chat.appendChild(thinkingMsg);
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+    const json = await res.json();
+    chat.removeChild(thinkingMsg);
+    if (json.reply) append('bot', json.reply);
+    else append('bot', 'No reply from model');
+  } catch (err) {
+    chat.removeChild(thinkingMsg);
+    append('bot', 'Error: ' + err.message);
+  }
+});
+
+// Optional: press Enter to send
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') btn.click();
+});
+</script>
+
+</body>
+</html>
