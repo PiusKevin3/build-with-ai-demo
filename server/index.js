@@ -20,28 +20,34 @@ app.get('/_alive', (req, res) => res.json({ ok: true }));
 // POST /api/chat
 // body: { message: string }
 app.post('/api/chat', async (req, res) => {
-const { message } = req.body || {};
-if (!message || typeof message !== 'string') {
-return res.status(400).json({ error: 'message must be a non-empty string' });
-}
+    const { message } = req.body || {};
+    if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'message must be a non-empty string' });
+    }
+
+    // Append custom instructions to the text
+    // const modifiedText = `${message}\n\nSummarize this into less or equal to 5 short bulleted lines. 
+    // Please don't include asterisks (**), bold formatting, or any markdown. Remember to make the bullet explanations much shorter!`;
 
 
-try {
-const reply = await generateText(message);
-res.json({ reply });
-} catch (err) {
-console.error('Error calling model:', err);
-res.status(500).json({ error: 'Model request failed', detail: err.message });
-}
+    try {
+        const reply = await generateText(message);
+        // const reply = await generateText(modifiedText);
+
+        res.json({ reply });
+    } catch (err) {
+        console.error('Error calling model:', err);
+        res.status(500).json({ error: 'Model request failed', detail: err.message });
+    }
 });
 
 
 // fallback to index.html for SPA
 app.get('*', (req, res) => {
-res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 
 app.listen(PORT, () => {
-console.log(`Server started on port ${PORT}`);
+    console.log(`Server started on port ${PORT}`);
 });
