@@ -1,0 +1,28 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/pivotal-realm-472708-j8/ai-web-app', '-f', 'Dockerfile', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/pivotal-realm-472708-j8/ai-web-app']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: [
+      'run', 'deploy', 'ai-web-app',
+      '--image', 'gcr.io/pivotal-realm-472708-j8/ai-web-app',
+      '--region', 'me-west1',
+      '--platform', 'managed',
+      '--allow-unauthenticated'
+    ]
+    
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: [
+      'run', 'services', 'add-iam-policy-binding', 'ai-web-app',
+      '--region', 'me-west1',
+      '--member=allUsers',
+      '--role=roles/run.invoker'
+    ]
+
+images:
+  - 'gcr.io/pivotal-realm-472708-j8/ai-web-app'
