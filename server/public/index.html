@@ -6,175 +6,292 @@
 <title>Gemini Workshop Demo</title>
 
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    padding: 2rem;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 2rem;
+}
 
-  h1 {
-    text-align: center;
-    margin-bottom: 1rem;
-    font-size: 2rem;
-    text-shadow: 1px 1px 5px rgba(0,0,0,0.3);
-  }
+#app {
+  background: #1f1f2e;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 520px;
+  min-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-  #chat-container {
-    background: #1f1f2e;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    min-height: 70vh; /* default height of container */
-  }
+h1 {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.6rem;
+  border-bottom: 1px solid #333;
+}
 
-  #chat {
-    flex: 1;
-    padding: 1rem;
-    overflow-y: auto; /* scrollable when content exceeds height */
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+/* Tabs */
+.tabs {
+  display: flex;
+  background: #2c2c3e;
+}
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 0.6rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border-bottom: 2px solid transparent;
+}
+.tab.active {
+  background: #1f1f2e;
+  border-bottom: 2px solid #10b981;
+}
 
-  .message {
-    padding: 0.6rem 1rem;
-    border-radius: 20px;
-    max-width: 80%;
-    word-wrap: break-word;
-    line-height: 1.4;
-    animation: fadeIn 0.3s ease;
-  }
+/* Content */
+.panel {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+}
+.panel.active {
+  display: flex;
+}
 
-  .user {
-    background: #4ade80;
-    color: #1a1a1a;
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-  }
+.output {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
 
-  .bot {
-    background: #3b82f6;
-    color: #fff;
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-  }
+.message {
+  padding: 0.6rem 1rem;
+  border-radius: 18px;
+  max-width: 85%;
+  line-height: 1.4;
+  animation: fadeIn 0.2s ease;
+}
+.user {
+  background: #4ade80;
+  color: #1a1a1a;
+  align-self: flex-end;
+}
+.bot {
+  background: #3b82f6;
+  align-self: flex-start;
+}
 
-  #input-area {
-    display: flex;
-    border-top: 1px solid #333;
-    padding: 0.5rem;
-    background: #2c2c3e;
-  }
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.7rem;
+  border-top: 1px solid #333;
+  background: #2c2c3e;
+}
 
-  #msg {
-    flex: 1;
-    border: none;
-    border-radius: 20px;
-    padding: 0.6rem 1rem;
-    font-size: 1rem;
-    outline: none;
-    margin-right: 0.5rem;
-    background: #1f1f2e;
-    color: #fff;
-  }
+input, button {
+  border-radius: 20px;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+}
+input {
+  flex: 1;
+  background: #1f1f2e;
+  color: #fff;
+  outline: none;
+}
+button {
+  background: #10b981;
+  color: #fff;
+  cursor: pointer;
+}
+button:hover {
+  background: #059669;
+}
 
-  #send {
-    background: #10b981;
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    padding: 0 1rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  #send:hover {
-    background: #059669;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Scrollbar styling */
-  #chat::-webkit-scrollbar {
-    width: 6px;
-  }
-  #chat::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 3px;
-  }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
-<body>
 
-<div id="chat-container">
-<h1>AI Web App</h1>
-  <div id="chat"></div>
-  <div id="input-area">
-    <input id="msg" placeholder="Type your message..." />
-    <button id="send">Send</button>
+<body>
+<div id="app">
+  <h1>Gemini AI Web App</h1>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="chat">Chat</div>
+    <div class="tab" data-tab="url">Website</div>
+    <div class="tab" data-tab="pdf">PDF</div>
+  </div>
+
+  <!-- CHAT TAB -->
+  <div class="panel active" id="chat">
+    <div class="output" id="chatOutput"></div>
+    <div class="controls">
+      <input id="chatInput" placeholder="Ask something..." />
+      <button onclick="sendChat()">Send</button>
+    </div>
+  </div>
+
+  <!-- URL TAB -->
+  <div class="panel" id="url">
+    <div class="output" id="urlOutput"></div>
+    <div class="controls">
+      <input id="urlInput" placeholder="Paste website URL..." />
+      <button onclick="submitURL()">Load URL</button>
+    </div>
+    <div class="controls">
+      <input type="text" id="urlQuestion" placeholder="Ask a question about the website..." />
+      <button onclick="askURLQuestion()">Ask</button>
+    </div>
+  </div>
+
+  <!-- PDF TAB -->
+  <div class="panel" id="pdf">
+    <div class="output" id="pdfOutput"></div>
+    <div class="controls">
+      <input type="file" id="pdfInput" accept="application/pdf" />
+    </div>
+    <div class="controls">
+      <input type="text" id="pdfQuestion" placeholder="Ask a question about the PDF..." />
+      <button onclick="summarizePDF()">Ask</button>
+    </div>
   </div>
 </div>
 
 <script>
-const chat = document.getElementById('chat');
-const input = document.getElementById('msg');
-const btn = document.getElementById('send');
+const chatInput = document.getElementById('chatInput');
+const chatOutput = document.getElementById('chatOutput');
 
-function append(role, text) {
-  const p = document.createElement('div');
-  p.className = 'message ' + role;
-  p.textContent = text;
-  chat.appendChild(p);
-  chat.scrollTop = chat.scrollHeight;
+const urlInput = document.getElementById('urlInput');
+const urlOutput = document.getElementById('urlOutput');
+const urlQuestion = document.getElementById('urlQuestion');
+let urlMessages = [];
+let currentURL = '';
+
+const pdfInput = document.getElementById('pdfInput');
+const pdfOutput = document.getElementById('pdfOutput');
+const pdfQuestion = document.getElementById('pdfQuestion');
+let pdfMessages = [];
+
+/* Tabs */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.tab, .panel').forEach(el => el.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  };
+});
+
+function addMessage(container, role, text) {
+  const div = document.createElement('div');
+  div.className = 'message ' + role;
+  div.textContent = text;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
 }
 
-btn.addEventListener('click', async () => {
-  const message = input.value.trim();
-  if (!message) return;
-  append('user', message);
-  input.value = '';
+/* Chat */
+async function sendChat() {
+  const input = chatInput.value.trim();
+  if (!input) return;
+  addMessage(chatOutput, 'user', input);
+  chatInput.value = '';
+  addMessage(chatOutput, 'bot', 'Thinking...');
 
-  const thinkingMsg = document.createElement('div');
-  thinkingMsg.className = 'message bot';
-  thinkingMsg.textContent = '...thinking';
-  chat.appendChild(thinkingMsg);
-  chat.scrollTop = chat.scrollHeight;
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: input })
+  });
+  const data = await res.json();
+  chatOutput.lastChild.remove();
+  addMessage(chatOutput, 'bot', data.reply || 'No response');
+}
 
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message })
-    });
-    const json = await res.json();
-    chat.removeChild(thinkingMsg);
-    if (json.reply) append('bot', json.reply);
-    else append('bot', 'No reply from model');
-  } catch (err) {
-    chat.removeChild(thinkingMsg);
-    append('bot', 'Error: ' + err.message);
-  }
-});
+/* URL Load */
+async function submitURL() {
+  const input = urlInput.value.trim();
+  if (!input) return;
+  currentURL = input;
+  urlMessages = [`User loaded URL: ${currentURL}`];
+  addMessage(urlOutput, 'user', currentURL);
+  addMessage(urlOutput, 'bot', 'Fetching summary...');
 
-// Optional: press Enter to send
-input.addEventListener('keydown', e => {
-  if (e.key === 'Enter') btn.click();
-});
+  const res = await fetch('/api/summarize-url', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url: currentURL, messages: urlMessages })
+  });
+
+  const data = await res.json();
+  urlOutput.lastChild.remove();
+  addMessage(urlOutput, 'bot', data.summary || 'Failed to summarize');
+
+  urlMessages.push(`Gemini: ${data.summary}`);
+  urlInput.value = '';
+}
+
+/* URL Question */
+async function askURLQuestion() {
+  const question = urlQuestion.value.trim();
+  if (!question || !currentURL) return;
+
+  addMessage(urlOutput, 'user', question);
+  addMessage(urlOutput, 'bot', 'Thinking...');
+
+  urlMessages.push(`User: ${question}`);
+
+  const res = await fetch('/api/summarize-url', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url: currentURL, messages: urlMessages })
+  });
+
+  const data = await res.json();
+  urlOutput.lastChild.remove();
+  addMessage(urlOutput, 'bot', data.summary || 'Failed to summarize');
+
+  urlMessages.push(`Gemini: ${data.summary}`);
+  urlQuestion.value = '';
+}
+
+/* PDF */
+async function summarizePDF() {
+  const file = pdfInput.files[0];
+  const question = pdfQuestion.value.trim();
+  if (!file || !question) return;
+
+  pdfMessages.push(`User: ${question}`);
+  addMessage(pdfOutput, 'user', question);
+  addMessage(pdfOutput, 'bot', 'Analyzing...');
+
+  const form = new FormData();
+  form.append('pdf', file);
+  form.append('messages', JSON.stringify(pdfMessages));
+
+  const res = await fetch('/api/summarize-pdf', { method: 'POST', body: form });
+  const data = await res.json();
+
+  pdfOutput.lastChild.remove();
+  addMessage(pdfOutput, 'bot', data.summary || 'Failed to analyze PDF');
+
+  pdfMessages.push(`Gemini: ${data.summary}`);
+  pdfQuestion.value = '';
+}
 </script>
-
 </body>
 </html>
