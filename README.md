@@ -2,6 +2,9 @@
 
 A beginner-friendly AI Web App using **Google Gemini API** with Node.js, ready to deploy locally or on **Google Cloud Run**.
 
+**This is the link to the presentation slides:**
+https://docs.google.com/presentation/d/1IDOpgo2d_PK3TDihHhens0VMVFzNtFSqcTJRmBfpxNs/edit?usp=sharing
+
 ---
 
 ## Quick start (local)
