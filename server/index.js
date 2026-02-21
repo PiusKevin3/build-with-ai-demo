@@ -5,7 +5,7 @@ const multer = require('multer');
 
 const { chat, summarizeURL, summarizePDF } = require('./services/geminiClient');
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT ;
 const app = express();
 const upload = multer({ dest: '/tmp' });
 
