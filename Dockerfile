@@ -2,16 +2,17 @@ FROM node:18-slim
 
 WORKDIR /app
 
-# Copy package.json from server directory
-COPY server/package.json ./server/
-WORKDIR /app/server
+# Copy package.json and install dependencies
+COPY server/package.json ./
 RUN npm install --production
 
-# Copy the rest of the server code
+# Copy the entire server directory
 COPY server/ ./
+
+# Debug: List contents to verify files are copied
+RUN ls -la && ls -la public/
 
 ENV PORT=8080
 EXPOSE 8080
 
-# Run from the server directory
 CMD ["node", "index.js"]
