@@ -65,10 +65,6 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-<<<<<<< HEAD
-app.listen(PORT, "0.0.0.0", () => {
-=======
 app.listen(PORT, '0.0.0.0', () => {
->>>>>>> 94795fd688e5ff468cb16f25de6e7c4db3f4c0e5
   console.log(`Server started on port ${PORT}`);
 });
