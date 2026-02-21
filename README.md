@@ -13,7 +13,7 @@ https://docs.google.com/presentation/d/1IDOpgo2d_PK3TDihHhens0VMVFzNtFSqcTJRmBfp
 
 ```bash
 cp .env.example .env
-# edit .env to add your GEMINI_API_KEY
+# edit .env to add your GEMINI_API_KEY env file in your code
 
 Install dependencies:
 
