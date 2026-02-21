@@ -17,7 +17,7 @@ if (!GEMINI_API_KEY) {
    1. Chat
 ========================= */
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const chatModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+const chatModel = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
 
 async function chat(prompt) {
     const result = await chatModel.generateContentStream(prompt);
@@ -44,7 +44,7 @@ Answer the latest question clearly and concisely.
 `;
 
     const interaction = await interactionsClient.interactions.create({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3-flash-preview',
         input: prompt,
         tools: [{ type: 'url_context' }]
     });
@@ -72,7 +72,7 @@ async function summarizePDF(filePath, messages = []) {
     ];
 
     const result = await interactionsClient.interactions.create({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3-flash-preview',
         input: inputMessages
     });
 
