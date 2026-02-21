@@ -5,7 +5,7 @@ const multer = require('multer');
 
 const { chat, summarizeURL, summarizePDF } = require('./services/geminiClient');
 
-const PORT = process.env.PORT ;
+const PORT = process.env.PORT || 8080;
 const app = express();
 const upload = multer({ dest: '/tmp' });
 
@@ -63,4 +63,6 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server started on port ${PORT}`);
+});
